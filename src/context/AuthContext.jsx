@@ -1,7 +1,7 @@
-import { createContext, useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from '@/hooks/use-toast';
-import { authApi } from '@/services/api';
+import { createContext, useState, useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
+import { authApi } from "@/services/api";
 
 // Create auth context
 const AuthContext = createContext(null);
@@ -11,17 +11,19 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingAuth, setLoadingAuth] = useState(true);
   const navigate = useNavigate();
 
   // Check if user is already logged in (from localStorage)
   useEffect(() => {
-    const storedAuth = localStorage.getItem('msGamesAuth');
+    const storedAuth = localStorage.getItem("msGamesAuth");
     if (storedAuth) {
       const authData = JSON.parse(storedAuth);
       setIsAuthenticated(true);
       setUser(authData.user);
       setToken(authData.token);
     }
+    setLoadingAuth(false); // ✅ Done checking
   }, []);
 
   // Login function
@@ -29,64 +31,70 @@ export const AuthProvider = ({ children }) => {
     setIsLoading(true);
     try {
       // For development, keep dummy login for testing
-      if (email === 'admin@msgames.com' && password === 'password') {
+      if (email === "admin@msgames.com" && password === "password") {
         const userData = {
-          id: '1',
-          name: 'Admin User',
-          email: 'admin@msgames.com',
-          role: 'admin'
+          id: "1",
+          name: "Admin User",
+          email: "admin@msgames.com",
+          role: "admin",
         };
-        
+
         setUser(userData);
-        setToken('dummy-token');
+        setToken("dummy-token");
         setIsAuthenticated(true);
-        
+
         // Store in localStorage
-        localStorage.setItem('msGamesAuth', JSON.stringify({
-          isAuthenticated: true,
-          user: userData,
-          token: 'dummy-token'
-        }));
-        
+        localStorage.setItem(
+          "msGamesAuth",
+          JSON.stringify({
+            isAuthenticated: true,
+            user: userData,
+            token: "dummy-token",
+          })
+        );
+
         toast({
           title: "Login Successful",
           description: "Welcome to MSGames Admin Dashboard",
         });
-        
-        navigate('/');
+
+        navigate("/");
         return true;
       }
-      
+
       // Use actual API for all other login attempts
       const response = await authApi.login(email, password);
-      
+
       if (response && response.access_token) {
         // Assuming we would get user data from token or another API call
         // For now, just use email
         const userData = {
           id: email,
           email: email,
-          name: email.split('@')[0],
-          role: 'user'
+          name: email.split("@")[0],
+          role: "user",
         };
-        
+
         setUser(userData);
         setToken(response.access_token);
         setIsAuthenticated(true);
-        
+
         // Store in localStorage
-        localStorage.setItem('msGamesAuth', JSON.stringify({
-          isAuthenticated: true,
-          user: userData,
-          token: response.access_token
-        }));
-        
+        localStorage.setItem(
+          "msGamesAuth",
+          JSON.stringify({
+            isAuthenticated: true,
+            user: userData,
+            token: response.access_token,
+          })
+        );
+
         toast({
           title: "Login Successful",
           description: "Welcome to MSGames Admin Dashboard",
         });
-        
-        navigate('/');
+
+        navigate("/");
         return true;
       }
     } catch (error) {
@@ -106,13 +114,13 @@ export const AuthProvider = ({ children }) => {
     setIsLoading(true);
     try {
       await authApi.register(userData);
-      
+
       toast({
         title: "Registration Successful",
         description: "Please login with your new account",
       });
-      
-      navigate('/login');
+
+      navigate("/login");
       return true;
     } catch (error) {
       toast({
@@ -131,24 +139,27 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setToken(null);
     setIsAuthenticated(false);
-    localStorage.removeItem('msGamesAuth');
+    localStorage.removeItem("msGamesAuth");
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out",
     });
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      isAuthenticated, 
-      isLoading, 
-      token,
-      login, 
-      logout,
-      register 
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated,
+        isLoading,
+        loadingAuth,
+        token,
+        login,
+        logout,
+        register,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -158,7 +169,7 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
