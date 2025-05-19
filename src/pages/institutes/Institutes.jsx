@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { PageHeader } from "@/components/PageHeader";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -10,18 +10,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { institutesApi } from "@/services/api";
+import { Eye } from "lucide-react";
+
 import AddInstituteModal from "@/pages/institutes/AddInstituteModal";
-import ViewInstituteModal from "@/pages/institutes/ViewInstituteModal"; // new modal
-import EditInstituteModal from "@/pages/institutes/EditInstituteModal"; // new modal
+import EditInstituteModal from "@/pages/institutes/EditInstituteModal";
+import ViewInstituteModal from "@/pages/institutes/ViewInstituteModal";
+import { institutesApi } from "@/services/api";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Institutes = () => {
+  const navigate = useNavigate();
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showViewModal, setShowViewModal] = useState(false); // For view
-  const [showEditModal, setShowEditModal] = useState(false); // For edit
-  const [selectedInstitute, setSelectedInstitute] = useState(null); // For selected institute
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedInstitute, setSelectedInstitute] = useState(null);
 
   const {
     data: response,
@@ -75,33 +79,66 @@ const Institutes = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Professors</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>Mode</TableHead>
+                  <TableHead>Contact Person</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Subscription</TableHead>
+                  <TableHead className="text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {institutes.map((institute) => (
-                  <TableRow key={institute.id}>
+                  <TableRow key={institute._id || institute.id}>
                     <TableCell className="font-medium">
                       {institute.name}
                     </TableCell>
-                    <TableCell>{institute.location || "—"}</TableCell>
-                    <TableCell>{institute.professors || 0}</TableCell>
-                    <TableCell className="text-right space-x-2">
+                    <TableCell>
+                      <Badge
+                        variant={
+                          institute.mode === "temporary" ? "outline" : "default"
+                        }
+                      >
+                        {institute.mode || "—"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{institute.contactPersonName || "—"}</TableCell>
+                    <TableCell className="max-w-[150px] truncate">
+                      {institute.contactPersonEmail || "—"}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          institute.status === "active"
+                            ? "success"
+                            : "secondary"
+                        }
+                        className={
+                          institute.status === "active"
+                            ? "bg-green-100 text-green-800"
+                            : ""
+                        }
+                      >
+                        {institute.status || "—"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {institute.latestSubscriptionId ? (
+                        <Badge variant="secondary">Active</Badge>
+                      ) : (
+                        <Badge variant="outline">None</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-center flex items-center justify-center gap-2">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleViewInstitute(institute)}
+                        onClick={() => {
+                          navigate(`/institutes/${institute._id}`);
+                        }}
+                        className="flex items-center gap-1"
                       >
-                        View
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditInstitute(institute)}
-                      >
-                        Edit
+                        <Eye className="h-4 w-4" />
                       </Button>
                     </TableCell>
                   </TableRow>

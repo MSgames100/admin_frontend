@@ -1,13 +1,12 @@
-import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -15,9 +14,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { institutesApi } from "@/services/api";
 import { toast } from "@/hooks/use-toast";
+import { institutesApi } from "@/services/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 
 const AddInstituteModal = ({ open, onClose }) => {
   const [form, setForm] = useState({
@@ -25,6 +25,7 @@ const AddInstituteModal = ({ open, onClose }) => {
     mode: "librarian",
     contactPersonName: "",
     contactPersonEmail: "",
+    status: "active", // Added status field with default value
   });
 
   const queryClient = useQueryClient();
@@ -108,6 +109,25 @@ const AddInstituteModal = ({ open, onClose }) => {
                 required={form.mode === "librarian"}
               />
             </div>
+          </div>
+
+          <div>
+            <Label>Status</Label>
+            <Select
+              value={form.status}
+              onValueChange={(value) =>
+                setForm((prev) => ({ ...prev, status: value }))
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="text-right">

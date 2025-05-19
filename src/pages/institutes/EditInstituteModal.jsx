@@ -1,30 +1,37 @@
-import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { institutesApi } from "@/services/api";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
+import { institutesApi } from "@/services/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
 const EditInstituteModal = ({ open, onClose, institute }) => {
   const [form, setForm] = useState({
     name: institute?.name || "",
-    mode: institute?.mode || "librarian", // Default to librarian if not provided
+    mode: institute?.mode || "librarian",
     contactPersonEmail: institute?.contactPersonEmail || "",
     contactPersonName: institute?.contactPersonName || "",
-    // Handle other fields like subscription, etc.
+    status: institute?.status || "active",
   });
 
   const queryClient = useQueryClient();
 
   const { mutate, isLoading } = useMutation({
-    mutationFn: () => institutesApi.update(institute.id, form),
+    mutationFn: () => institutesApi.update(institute._id || institute.id, form),
     onSuccess: () => {
       toast({ title: "Institute updated successfully" });
       queryClient.invalidateQueries(["institutes"]);
@@ -51,10 +58,11 @@ const EditInstituteModal = ({ open, onClose, institute }) => {
   useEffect(() => {
     if (institute) {
       setForm({
-        name: institute.name,
-        mode: institute.mode,
-        contactPersonEmail: institute.contactPersonEmail,
-        contactPersonName: institute.contactPersonName,
+        name: institute.name || "",
+        mode: institute.mode || "librarian",
+        contactPersonEmail: institute.contactPersonEmail || "",
+        contactPersonName: institute.contactPersonName || "",
+        status: institute.status || "active",
       });
     }
   }, [institute]);
@@ -75,34 +83,65 @@ const EditInstituteModal = ({ open, onClose, institute }) => {
               required
             />
           </div>
+
           <div>
             <Label>Mode</Label>
-            <Input
-              name="mode"
+            <Select
               value={form.mode}
-              onChange={handleChange}
-              required
-            />
+              onValueChange={(value) =>
+                setForm((prev) => ({ ...prev, mode: value }))
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select mode" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="librarian">Librarian</SelectItem>
+                <SelectItem value="temporary">Temporary</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
+
           <div>
-            <Label>Contact Person Name</Label>
-            <Input
-              name="contactPersonName"
-              value={form.contactPersonName}
-              onChange={handleChange}
-              required
-            />
+            <Label>Contact Person</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+              <Input
+                name="contactPersonName"
+                placeholder="Name"
+                value={form.contactPersonName}
+                onChange={handleChange}
+                required
+              />
+              <Input
+                name="contactPersonEmail"
+                type="email"
+                placeholder="Email"
+                value={form.contactPersonEmail}
+                onChange={handleChange}
+                required={form.mode === "librarian"}
+              />
+            </div>
           </div>
+
           <div>
-            <Label>Contact Person Email</Label>
-            <Input
-              name="contactPersonEmail"
-              type="email"
-              value={form.contactPersonEmail}
-              onChange={handleChange}
-              required
-            />
+            <Label>Status</Label>
+            <Select
+              value={form.status}
+              onValueChange={(value) =>
+                setForm((prev) => ({ ...prev, status: value }))
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
+
           <div className="text-right">
             <Button type="submit" disabled={isLoading}>
               {isLoading ? "Updating..." : "Update Institute"}

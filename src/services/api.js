@@ -6,6 +6,7 @@ const API_URL = import.meta.env.VITE_APP_BASE_URL;
 // Default headers for JSON requests
 const defaultHeaders = {
   "Content-Type": "application/json",
+  "ngrok-skip-browser-warning": "true",
 };
 
 // Helper to add auth token to requests
@@ -74,6 +75,8 @@ export const institutesApi = {
 export const subscriptionsApi = {
   getAll: () => apiRequest("/subscriptions/"),
   getOne: (id) => apiRequest(`/subscriptions/${id}`),
+  getSubscriptionByInstitute: (instituteId) =>
+    apiRequest(`/subscriptions/institute/${instituteId}`),
   create: (data) => apiRequest("/subscriptions/", "POST", data),
   update: (id, data) => apiRequest(`/subscriptions/${id}`, "PUT", data),
   delete: (id) => apiRequest(`/subscriptions/${id}`, "DELETE"),
@@ -82,7 +85,7 @@ export const subscriptionsApi = {
 // Rate versions endpoints
 export const rateVersionsApi = {
   getAll: (simulationId) =>
-    apiRequest(`/rate-versions/?simulationId=${simulationId}`),
+    apiRequest(`/rate-versions/simulation/${simulationId}`),
   getLatest: (simulationId) =>
     apiRequest(`/rate-versions/latest/${simulationId}`),
   create: (data) => apiRequest("/rate-versions/", "POST", data),
