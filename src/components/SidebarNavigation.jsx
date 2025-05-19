@@ -5,6 +5,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Gamepad2,
+  GraduationCap,
   LayoutDashboard,
   LogOut,
   School,
@@ -84,6 +85,24 @@ export const SidebarNavigation = () => {
           label="Users"
           isCollapsed={collapsed}
         />
+        <NavItem
+          to="/professors"
+          icon={GraduationCap}
+          label="Professors"
+          isCollapsed={collapsed}
+        />
+        {/* <NavItem
+          to="/rate-versions"
+          icon={Tag}
+          label="Rate Versions"
+          isCollapsed={collapsed}
+        /> */}
+        {/* <NavItem
+          to="/subscriptions"
+          icon={Receipt}
+          label="Subscriptions"
+          isCollapsed={collapsed}
+        /> */}
       </div>
 
       <div className="border-t border-sidebar-border p-3 space-y-1">

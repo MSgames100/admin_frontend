@@ -12,7 +12,7 @@ import InstituteDetails from "./pages/institutes/InstituteDetails";
 import Institutes from "./pages/institutes/Institutes";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
-import Professors from "./pages/Professors";
+import Professors from "./pages/professors/Professors";
 import RateVersions from "./pages/RateVersions";
 import Register from "./pages/Register";
 import SimulationDetails from "./pages/simulations/SimulationDetails";

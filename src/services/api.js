@@ -95,8 +95,7 @@ export const rateVersionsApi = {
 
 // Professors endpoints
 export const professorsApi = {
-  getAll: (instituteId) =>
-    apiRequest(`/professors/?instituteId=${instituteId || ""}`),
+  getAll: () => apiRequest(`/professors`),
   getOne: (id) => apiRequest(`/professors/${id}`),
   create: (data) => apiRequest("/professors/", "POST", data),
   update: (id, data) => apiRequest(`/professors/${id}`, "PUT", data),
