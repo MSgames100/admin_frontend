@@ -51,7 +51,7 @@ export const SidebarNavigation = () => {
             <div className="h-8 w-8 rounded-md bg-msgames-500 flex items-center justify-center text-white font-bold">
               MS
             </div>
-            <span className="font-semibold text-lg">MSGames Admin</span>
+            <span className="font-semibold text-lg">MSgames Admin</span>
           </div>
         ) : (
           <div className="mx-auto h-8 w-8 rounded-md bg-msgames-500 flex items-center justify-center text-white font-bold">
@@ -79,12 +79,12 @@ export const SidebarNavigation = () => {
           label="Simulations"
           isCollapsed={collapsed}
         />
-        <NavItem
+        {/* <NavItem
           to="/users"
           icon={Users}
           label="Users"
           isCollapsed={collapsed}
-        />
+        /> */}
         <NavItem
           to="/professors"
           icon={GraduationCap}
